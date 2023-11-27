@@ -7,6 +7,7 @@ using FunctionApp.IsolatedDemo.Api.Contracts.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
+using System;
 
 namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
 {
@@ -22,15 +23,8 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
         [Fact]
         public async Task Post_ShouldCreateNote_WhenCalledWithValidNoteDetails()
         {
-            var host = new HostBuilder()
-                .ConfigureFunctionsWebApplication()
-                .ConfigureDefaultTestHost(_notesFunctionFixture)
-                .Build();
-
-            using (host)
+            await ExecuteArrangeActAssertAsync(async host =>
             {
-                await host.StartAsync();
-
                 var sut = host.Services.GetRequiredService<NotesFunction>();
 
                 // Arrange
@@ -49,11 +43,31 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
                 createdResult.StatusCode.Should().Be(StatusCodes.Status201Created);
                 createNoteResponse!.Title.Should().Be("Test note title");
                 createNoteResponse.Body.Should().Be("Test note description");
-            }
+            });
         }
 
         [Fact]
         public async Task Post_ShouldReturnBadRequest_WhenCalledWithInvalidNoteDetails()
+        {
+            await ExecuteArrangeActAssertAsync(async host =>
+            {
+                var sut = host.Services.GetRequiredService<NotesFunction>();
+
+                // Arrange
+                var createInvalidNoteRequest = new CreateNoteRequest();
+
+                // Act
+                var response = await sut.Post(createInvalidNoteRequest);
+
+                // Assert
+                var badRequestObjectResult = (BadRequestObjectResult)response;
+                badRequestObjectResult.Should().NotBeNull();
+                badRequestObjectResult.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+                badRequestObjectResult.Value.Should().Be("This HTTP triggered NotesFunction executed successfully, but you passed in a bad request model for the note creation process.");
+            });
+        }
+
+        private async Task ExecuteArrangeActAssertAsync(Action<IHost> arrangeActAssertAction)
         {
             var host = new HostBuilder()
                 .ConfigureFunctionsWebApplication()
@@ -64,19 +78,7 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
             {
                 await host.StartAsync();
 
-                var sut = host.Services.GetRequiredService<NotesFunction>();
-
-                // Arrange
-                var createInvalidNoteRequest = new CreateNoteRequest();
-                
-                // Act
-                var response = await sut.Post(createInvalidNoteRequest);
-
-                // Assert
-                var badRequestObjectResult = (BadRequestObjectResult)response;
-                badRequestObjectResult.Should().NotBeNull();
-                badRequestObjectResult.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
-                badRequestObjectResult.Value.Should().Be("This HTTP triggered NotesFunction executed successfully, but you passed in a bad request model for the note creation process.");
+                arrangeActAssertAction(host);
             }
         }
     }
