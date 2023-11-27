@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "FunctionApp.IsolatedDemo.Api": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7220"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "httpPort": 34878,
+      "useSSL": false
+    }
+  }
+}
