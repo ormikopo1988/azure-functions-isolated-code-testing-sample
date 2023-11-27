@@ -44,7 +44,7 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
 
                         services.AddSingleton(sp =>
                         {
-                            var cosmosClientBuilder = new CosmosClientBuilder(notesFunctionFixture.CosmosDbConnectionString);
+                            var cosmosClientBuilder = new CosmosClientBuilder(notesFunctionFixture.GetCosmosDbConnectionString());
 
                             cosmosClientBuilder.WithHttpClientFactory(() =>
                             {
@@ -70,7 +70,7 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
                         services
                             .AddHttpClient<INotificationService, NotificationService>(client =>
                             {
-                                client.BaseAddress = new Uri(notesFunctionFixture.NotificationApiServerUrl!);
+                                client.BaseAddress = new Uri(notesFunctionFixture.GetNotificationApiServerUrl());
                             });
 
                         services.AddTransient<NotesFunction>();

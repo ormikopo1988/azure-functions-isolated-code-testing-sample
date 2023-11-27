@@ -7,9 +7,6 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
 {
     public class NotesFunctionFixture : IAsyncLifetime
     {
-        public string CosmosDbConnectionString { get; private set; } = default!;
-        public string NotificationApiServerUrl { get; private set; } = default!;
-
         private readonly CosmosDbContainer _cosmosDbContainer = new CosmosDbBuilder()
             .WithImage("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest")
             .WithName("Cosmos_DB")
@@ -25,6 +22,9 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
             .Build();
         private readonly NotificationApiServer _notificationApiServer = new();
 
+        public string GetCosmosDbConnectionString() => _cosmosDbContainer.GetConnectionString();
+        public string GetNotificationApiServerUrl() => _notificationApiServer.Url;
+
         public async Task DisposeAsync()
         {
             await _cosmosDbContainer.DisposeAsync();
@@ -36,9 +36,6 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
             _notificationApiServer.Start();
             _notificationApiServer.SetupRequestDetails();
             await _cosmosDbContainer.StartAsync();
-
-            CosmosDbConnectionString = _cosmosDbContainer.GetConnectionString();
-            NotificationApiServerUrl = _notificationApiServer.Url;
         }
     }
 }
