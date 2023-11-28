@@ -11,14 +11,10 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
             .WithImage("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest")
             .WithName("Cosmos_DB")
             .WithPortBinding(8081, 8081)
-            .WithPortBinding(10251, 10251)
-            .WithPortBinding(10252, 10252)
-            .WithPortBinding(10253, 10253)
-            .WithPortBinding(10254, 10254)
             .WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1")
             .WithEnvironment("AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE", "127.0.0.1")
             .WithEnvironment("AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE", "false")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(10251))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(8081))
             .Build();
         private readonly NotificationApiServer _notificationApiServer = new();
 
