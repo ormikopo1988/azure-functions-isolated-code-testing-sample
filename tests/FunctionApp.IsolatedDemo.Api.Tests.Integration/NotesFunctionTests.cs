@@ -7,12 +7,17 @@ using FunctionApp.IsolatedDemo.Api.Contracts.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
+using Bogus;
 
 namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
 {
     public class NotesFunctionTests : IClassFixture<NotesFunctionFixture>
     {
         private readonly NotesFunctionFixture _notesFunctionFixture;
+        private readonly Faker<CreateNoteRequest> _noteGenerator =
+            new Faker<CreateNoteRequest>()
+                .RuleFor(x => x.Title, faker => faker.Lorem.Random.Words())
+                .RuleFor(x => x.Body, faker => faker.Lorem.Random.Words());
 
         public NotesFunctionTests(NotesFunctionFixture notesFunctionFixture)
         {
@@ -34,11 +39,7 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
                 var sut = host.Services.GetRequiredService<NotesFunction>();
 
                 // Arrange
-                var createValidNoteRequest = new CreateNoteRequest
-                {
-                    Title = "Test note title",
-                    Body = "Test note description"
-                };
+                var createValidNoteRequest = _noteGenerator.Generate();
 
                 // Act
                 var response = await sut.Post(createValidNoteRequest);
@@ -47,8 +48,8 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
                 var createdResult = (CreatedResult)response;
                 var createNoteResponse = createdResult.Value as CreateNoteResponse;
                 createdResult.StatusCode.Should().Be(StatusCodes.Status201Created);
-                createNoteResponse!.Title.Should().Be("Test note title");
-                createNoteResponse.Body.Should().Be("Test note description");
+                createNoteResponse!.Title.Should().Be(createValidNoteRequest.Title);
+                createNoteResponse.Body.Should().Be(createValidNoteRequest.Body);
             }
         }
 

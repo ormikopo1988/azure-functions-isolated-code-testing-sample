@@ -39,7 +39,7 @@ namespace FunctionApp.IsolatedDemo.Api.Services
 
             var newNote = await _noteRepository.CreateAsync(new Note
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 Title = createNoteOptions.Title,
                 Body = createNoteOptions.Body,
                 CreatedAt = _dateTimeProvider.UtcNow,
@@ -50,7 +50,7 @@ namespace FunctionApp.IsolatedDemo.Api.Services
 
             return new NoteDto
             {
-                Id = newNote.Id,
+                Id = newNote.Id.ToString(),
                 Title = newNote.Title,
                 LastUpdatedOn = newNote.LastUpdatedOn,
                 Body = newNote.Body

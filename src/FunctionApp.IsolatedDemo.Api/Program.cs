@@ -13,7 +13,8 @@ var host = new HostBuilder()
                  .AddEnvironmentVariables()
                  .Build();
 
-        services.AddApiServices(configuration);
+        services.AddApplication(configuration);
+        services.AddInfrastructure(configuration);
     })
     .Build();
 
