@@ -13,7 +13,7 @@ namespace FunctionApp.IsolatedDemo.Api.Tests.Integration
                 .WithEnvironment("POSTGRES_USER", "postgres")
                 .WithEnvironment("POSTGRES_PASSWORD", "postgres")
                 .WithEnvironment("POSTGRES_DB", "notesdb")
-                .WithPortBinding(5432, 5432)
+                .WithPortBinding(5433, 5432)
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))
                 .Build();
         private readonly NotificationApiServer _notificationApiServer = new();
